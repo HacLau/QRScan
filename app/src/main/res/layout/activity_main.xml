@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="bean"
+            type="com.liu.qrscan.dataBean.MainActivityBean" />
+    </data>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp"
+            tools:context=".MainActivity">
+            <EditText
+                android:layout_marginTop="5dp"
+                android:id="@+id/et_qr_content"
+                android:hint="输入需要生成的内容"
+                android:textSize="16sp"
+                android:text="@={bean.qrContent}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btn_todo"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="生成二维码"
+                    android:layout_marginRight="5dp"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:id="@+id/btn_to_result"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="识别二维码"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btn_open_album"
+                    android:text="打开相册"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_height="wrap_content"/>
+                <Button
+                    android:id="@+id/btn_open_camera"
+                    android:text="打开相机"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/iv_pre"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:src="@mipmap/ic_launcher_round"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tone_view"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/tv_qr_result"
+                android:layout_marginTop="5dp"
+                android:hint="二维码识别结果："
+                android:textSize="16sp"
+                android:text="@={bean.qrResult}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
