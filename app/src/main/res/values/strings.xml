@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">QRScan</string>
+    <string name="app_name">QR</string>
     <string name="saturation">灰度</string>
     <string name="contrast">饱和度</string>
     <string name="lightness">亮度</string>
+    <string name="scan_text">扫一扫</string>
 </resources>

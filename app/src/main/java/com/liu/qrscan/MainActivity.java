@@ -8,27 +8,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.liu.qrscan.dataBean.MainActivityBean;
@@ -36,8 +28,6 @@ import com.liu.qrscan.databinding.ActivityMainBinding;
 import com.liu.qrscan.util.QRCodeUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private Bitmap mBitmap;
@@ -46,10 +36,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private MainActivityBean mBean = new MainActivityBean();
     private final static int REQUEST_OPEN_ALBUM = 0x01;
-    private final static int REQUEST_PERMISSION = 0x02;
+    private final static int REQUEST_OPEN_CAMERA = 0x02;
+    private final static int REQUEST_PERMISSION = 0x03;
     private String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
             ,Manifest.permission.READ_EXTERNAL_STORAGE
-            ,Manifest.permission.CAMERA};
+            ,Manifest.permission.CAMERA,
+            Manifest.permission.VIBRATE};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openCamera() {
-
+        Intent intent = new Intent(this,QRScannerActivity.class);
+        startActivityForResult(intent,REQUEST_OPEN_CAMERA);
     }
 
     private void toCreateQR() {
@@ -102,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
     private void toDiscernQR() {
         mBinding.ivPre.setDrawingCacheEnabled(true);
         Bitmap drawingCache = mBinding.ivPre.getDrawingCache();
-        String result = QRCodeUtil.decodeQRCode(drawingCache);
+        String result = QRCodeUtil.decodeQRCodeByRGB(drawingCache);
         mBinding.ivPre.setDrawingCacheEnabled(false);
-        mBinding.tvQrResult.setText(result);
+        mBinding.tvQrResult.setText("二维码识别结果：" + result);
     }
 
     private void openAlbum() {
@@ -151,14 +144,24 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                             mBitmap = rotateImage(mBitmap,readPictureDegree(picturePath));
-                            String result = QRCodeUtil.decodeQRCode(mBitmap);
+//                            String result = QRCodeUtil.decodeQRCodeByRGB(mBitmap);
                             mBinding.ivPre.setImageBitmap(mBitmap);
+
+                            mBinding.ivPre.setDrawingCacheEnabled(true);
+                            Bitmap drawingCache = mBinding.ivPre.getDrawingCache();
+                            String result = QRCodeUtil.decodeQRCodeByRGB(drawingCache);
+                            mBinding.ivPre.setDrawingCacheEnabled(false);
                             mBinding.tvQrResult.setText("二维码识别结果：" + result);
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                     break;
+                case REQUEST_OPEN_CAMERA:
+                    Log.e(TAG,"REQUEST_OPEN_CAMERA");
+                    String result = data.getStringExtra("result");
+                    mBinding.tvQrResult.setText("二维码识别结果：" + result);
                 default:
             }
         }

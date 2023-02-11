@@ -1,14 +1,11 @@
 package com.liu.qrscan.util;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.FormatException;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
@@ -16,14 +13,12 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.GlobalHistogramBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Vector;
 
 /**
 
@@ -87,7 +82,7 @@ public class QRCodeUtil {
      * @param srcBitmap
      * @return
      */
-    public static String decodeQRCode(Bitmap srcBitmap) {
+    public static String decodeQRCodeByRGB(Bitmap srcBitmap) {
         // 解码的参数
         Hashtable<DecodeHintType, Object> hints = new Hashtable<>(2);
         hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
@@ -110,6 +105,5 @@ public class QRCodeUtil {
         }
         return result == null ? null : result.getText();
     }
-
 
 }
