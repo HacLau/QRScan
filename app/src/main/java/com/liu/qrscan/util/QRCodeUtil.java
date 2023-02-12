@@ -6,7 +6,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
@@ -16,12 +15,10 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.liu.qrscan.decoding.DecodeFormatManager;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Vector;
 
 /**
 
@@ -89,24 +86,29 @@ public class QRCodeUtil {
         // 解码的参数
         Hashtable<DecodeHintType, Object> hints = new Hashtable<>(2);
         hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
-        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+//        hints.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
+//        hints.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
         Result result = null;
-        int width = srcBitmap.getWidth();
-        int height = srcBitmap.getHeight();
-        int[] pixels = new int[width * height];
-        srcBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        //新建一个RGBLuminanceSource对象
-        RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-        //将图片转换成二进制图片
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
-        MultiFormatReader reader = new MultiFormatReader();
-        try {
-            result = reader.decode(binaryBitmap,hints);//开始解析
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }finally {
-            reader.reset();
-        }
+        int num = 1;
+//        do{
+            int width = srcBitmap.getWidth();
+            int height = srcBitmap.getHeight();
+            int[] pixels = new int[width * height];
+            srcBitmap.getPixels(pixels, 0, width, 0, 0, width / num, height / num);
+            //新建一个RGBLuminanceSource对象
+            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+            //将图片转换成二进制图片
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
+            MultiFormatReader reader = new MultiFormatReader();
+            try {
+                result = reader.decode(binaryBitmap, hints);//开始解析
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                reader.reset();
+            }
+            num = num * 2;
+//        } while(result == null && num < srcBitmap.getWidth() && num < srcBitmap.getHeight());
         return result == null ? null : result.getText();
     }
 
