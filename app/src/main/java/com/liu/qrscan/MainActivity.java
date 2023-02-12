@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -25,6 +26,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.liu.qrscan.dataBean.MainActivityBean;
 import com.liu.qrscan.databinding.ActivityMainBinding;
+import com.liu.qrscan.util.ImageTools;
 import com.liu.qrscan.util.QRCodeUtil;
 
 import java.io.IOException;
@@ -87,27 +89,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toCreateQR() {
-        Bitmap bitmap = QRCodeUtil.createQRImage(mBean.qrContent, 400, 400);
-        mBinding.ivPre.setImageBitmap(bitmap);
+        Bitmap bitmap = QRCodeUtil.createQRImage(mBean.qrContent, mBitmap.getWidth(), mBitmap.getHeight());
+        mBinding.ivPre.setImageBitmap(mBitmap);
     }
 
 
     private void toDiscernQR() {
-        mBinding.ivPre.setDrawingCacheEnabled(true);
-        Bitmap drawingCache = mBinding.ivPre.getDrawingCache();
-        String result = QRCodeUtil.decodeQRCodeByRGB(drawingCache);
-        mBinding.ivPre.setDrawingCacheEnabled(false);
-        mBinding.tvQrResult.setText("二维码识别结果：" + result);
+        if (mBitmap != null) {
+            String result = QRCodeUtil.decodeQRCodeByRGB(mBitmap);
+            mBinding.tvQrResult.setText("二维码识别结果：" + result);
+        }
     }
 
     private void openAlbum() {
         Intent intent = new Intent(Intent.ACTION_PICK, null);
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(intent, REQUEST_OPEN_ALBUM);
-    }
-
-    private Bitmap getLogoBit() {
-        return  BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
     }
 
     private void hideSoftKeyBoard(IBinder token) {
@@ -139,18 +136,16 @@ public class MainActivity extends AppCompatActivity {
                 case REQUEST_OPEN_ALBUM:
                     if (data != null) {
                         Uri uri = data.getData();
-                        String picturePath = getPicturePath(uri);
+                        String picturePath = ImageTools.getPicturePath(this,uri);
                         Log.e(TAG,"picturePath = " + picturePath);
                         try {
                             mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                            mBitmap = rotateImage(mBitmap,readPictureDegree(picturePath));
-//                            String result = QRCodeUtil.decodeQRCodeByRGB(mBitmap);
+                            mBitmap = ImageTools.rotateImage(mBitmap,ImageTools.readPictureDegree(picturePath));
+//                            mBitmap = ImageTools.convertToBlackWhite(mBitmap);
+                            mBitmap = ImageTools.toGrayscale(mBitmap);
+                            String result = QRCodeUtil.decodeQRCodeByRGB(mBitmap);
                             mBinding.ivPre.setImageBitmap(mBitmap);
-
-                            mBinding.ivPre.setDrawingCacheEnabled(true);
-                            Bitmap drawingCache = mBinding.ivPre.getDrawingCache();
-                            String result = QRCodeUtil.decodeQRCodeByRGB(drawingCache);
-                            mBinding.ivPre.setDrawingCacheEnabled(false);
+                            Log.e(TAG,"原始图像大小：" + mBitmap.getByteCount());
                             mBinding.tvQrResult.setText("二维码识别结果：" + result);
 
                         } catch (IOException e) {
@@ -168,61 +163,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 对图片进行旋转，拍照后应用老是显示图片横向，而且是逆时针90度，现在给他设置成显示顺时针90度
-     *
-     * @param bitmap    图片
-     * @param degree 顺时针旋转的角度
-     * @return 返回旋转后的位图
-     */
-    public Bitmap rotateImage(Bitmap bitmap, float degree) {
-        //create new matrix
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        return bmp;
-    }
 
-    /**
-     * 根据图片路径去比对旋转的角度
-     * @param path
-     * @return
-     */
-    public static int readPictureDegree(String path) {
-        int degree = 0;
-        try {
-            //需要权限 不然会报bug
-            ExifInterface exifInterface = new ExifInterface(path);
-            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    degree = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    degree = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    degree = 270;
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return degree;
-
-    }
-
-
-    private String getPicturePath(Uri uri) {
-        String picture = "";
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
-        if(cursor.moveToFirst()) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            picture = cursor.getString(column_index);
-        }
-        cursor.close();
-        return picture;
-    }
 
 }

@@ -22,11 +22,12 @@ import android.net.Uri;
 import com.google.zxing.BarcodeFormat;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-final class DecodeFormatManager {
+public final class DecodeFormatManager {
 
   private static final Pattern COMMA_PATTERN = Pattern.compile(",");
 

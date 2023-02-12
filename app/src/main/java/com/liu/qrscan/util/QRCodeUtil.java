@@ -6,6 +6,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.EncodeHintType;
+import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
@@ -15,10 +16,12 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.liu.qrscan.decoding.DecodeFormatManager;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
 
 /**
 
@@ -86,6 +89,7 @@ public class QRCodeUtil {
         // 解码的参数
         Hashtable<DecodeHintType, Object> hints = new Hashtable<>(2);
         hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
         Result result = null;
         int width = srcBitmap.getWidth();
         int height = srcBitmap.getHeight();
