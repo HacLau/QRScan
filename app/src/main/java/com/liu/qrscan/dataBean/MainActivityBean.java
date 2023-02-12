@@ -19,7 +19,7 @@ public class MainActivityBean extends BaseObservable {
 
     public void setQrContent(String qrContent) {
         this.qrContent = qrContent;
-        notifyPropertyChanged(BR.qrContent);//使用BaseObservable中的notifyPropertyChanged(BR.id)进行通知
+        notifyPropertyChanged(BR.qrContent);
     }
     @Bindable
     public String getQrResult() {
@@ -28,7 +28,7 @@ public class MainActivityBean extends BaseObservable {
 
     public void setQrResult(String qrResult) {
         this.qrResult = qrResult;
-        notifyPropertyChanged(BR.qrResult);//使用BaseObservable中的notifyPropertyChanged(BR.id)进行通知
+        notifyPropertyChanged(BR.qrResult);
     }
     @Bindable
     public String getPreUrl() {
@@ -37,6 +37,6 @@ public class MainActivityBean extends BaseObservable {
 
     public void setPreUrl(String preUrl) {
         this.preUrl = preUrl;
-        notifyPropertyChanged(BR.preUrl);//使用BaseObservable中的notifyPropertyChanged(BR.id)进行通知
+        notifyPropertyChanged(BR.preUrl);
     }
 }

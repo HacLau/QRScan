@@ -108,6 +108,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+        mBinding.clearFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBitmap = srcBitmap;
+                setBitmap();
+            }
+        });
     }
 
     private void openCamera() {
@@ -190,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         if (srcBitmap == null){
             return;
         }
+
         String result = null;
         if (position == 0){
             while (position < 90 && result == null) {
@@ -199,7 +207,11 @@ public class MainActivity extends AppCompatActivity {
                 position++;
             }
         }else {
-            mBitmap = GPUImageTools.getGPUImage(this,srcBitmap,position);
+            Bitmap bitmap = srcBitmap;
+            if (mBinding.cbFilter.isChecked()){
+                bitmap = mBitmap;
+            }
+            mBitmap = GPUImageTools.getGPUImage(this,bitmap,position);
             result = QRCodeUtil.decodeQRCodeByRGB(mBitmap);
         }
         setBitmap();
